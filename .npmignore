@@ -1,0 +1,6 @@
+.env
+console.ts
+console.sh
+.vscode
+examples
+index.spec.ts

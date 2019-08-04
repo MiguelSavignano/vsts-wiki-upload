@@ -1,9 +1,14 @@
-const fs = require("fs");
-var walk = require("fs-walk");
-var _ = require("lodash");
-const { createClient } = require("./createClient");
+import fs from "fs";
+import * as walk from "fs-walk";
+import * as _ from "lodash";
+import { AxiosInstance } from "axios";
+import { createClient } from "./createClient";
 
-class WikiUploadFileService {
+export class WikiUploadFileService {
+  filePath: string;
+  absolutePath: string;
+  wikiId: string;
+  client: AxiosInstance;
   constructor({ organizationName, projectName, apiToken, filePath, wikiId }) {
     this.filePath = filePath;
     this.absolutePath = this.getAbsolutePath(this.filePath);
@@ -181,5 +186,3 @@ class WikiUploadFileService {
     return filePath.replace(this.absolutePath, "");
   }
 }
-
-exports.WikiUploadFileService = WikiUploadFileService;

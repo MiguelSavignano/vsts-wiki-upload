@@ -1,6 +1,6 @@
-const axios = require("axios").default;
+import axios from "axios";
 
-const createClient = ({ organizationName, projectName, apiToken }) => {
+export const createClient = ({ organizationName, projectName, apiToken }) => {
   const client = axios.create({
     baseURL: `https://dev.azure.com/${organizationName}/${projectName}/_apis/`,
     auth: { username: organizationName, password: apiToken },
@@ -24,4 +24,3 @@ const createClient = ({ organizationName, projectName, apiToken }) => {
   client.defaults.params = { "api-version": "5.0" };
   return client;
 };
-exports.createClient = createClient;
