@@ -182,4 +182,4 @@ class WikiUploadFileService {
   }
 }
 
-module.exports = WikiUploadFileService;
+exports.WikiUploadFileService = WikiUploadFileService;

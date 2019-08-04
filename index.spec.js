@@ -1,4 +1,4 @@
-const WikiUploadFileService = require("./index");
+const { WikiUploadFileService } = require("./index");
 
 const wikiUploadFileServiceFactory = (values = {}) => {
   return new WikiUploadFileService({
