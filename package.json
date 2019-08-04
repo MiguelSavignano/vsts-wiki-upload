@@ -1,0 +1,29 @@
+{
+  "name": "vsts-wiki-upload",
+  "version": "0.1.0",
+  "description": "Upload files to VSTS wiki",
+  "bin": "bin/vsts-wiki-upload.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": "https://github.com/MiguelSavignano/vsts-wiki-upload",
+  "author": "migue.masx@gmail.com",
+  "keywords": [
+    "vsts",
+    "Azure Devops",
+    "wiki"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.1",
+    "fs-walk": "0.0.2",
+    "lodash": "^4.17.15",
+    "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.0.0",
+    "jest": "^24.8.0",
+    "prettier": "^1.18.2"
+  }
+}
