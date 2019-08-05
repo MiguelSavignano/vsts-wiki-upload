@@ -7,9 +7,16 @@ import { createClient } from "./createClient";
 export class WikiUploadFileService {
   filePath: string;
   absolutePath: string;
-  wikiId: string;
+  wikiId?: string;
   client: AxiosInstance;
-  constructor({ organizationName, projectName, apiToken, filePath, wikiId }) {
+
+  constructor({
+    organizationName,
+    projectName,
+    apiToken,
+    filePath,
+    wikiId = null
+  }) {
     this.filePath = filePath;
     this.absolutePath = this.getAbsolutePath(this.filePath);
     this.wikiId = wikiId;
@@ -31,6 +38,7 @@ export class WikiUploadFileService {
   }
 
   async run() {
+    await this.setWikiMasterId();
     if (fs.lstatSync(this.filePath).isDirectory()) {
       this.uploadFolder(this.filePath);
     } else {
@@ -174,11 +182,15 @@ export class WikiUploadFileService {
     return response.headers.etag;
   }
 
-  listWikis() {
-    this.client
-      .get("/wiki/wikis")
-      .then(r => console.log(r.data))
-      .catch(r => console.log(r, r.data));
+  async listWikis() {
+    return this.client.get("/wiki/wikis");
+  }
+
+  async setWikiMasterId() {
+    if (this.wikiId) return this.wikiId;
+    const response = await this.listWikis();
+    const masterWiki = response.data.value.find(it => it.type == "projectWiki");
+    this.wikiId = masterWiki.id;
   }
 
   // private
