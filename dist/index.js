@@ -23,7 +23,7 @@ const walk = __importStar(require("fs-walk"));
 const _ = __importStar(require("lodash"));
 const createClient_1 = require("./createClient");
 class WikiUploadFileService {
-    constructor({ organizationName, projectName, apiToken, filePath, wikiId }) {
+    constructor({ organizationName, projectName, apiToken, filePath, wikiId = null }) {
         this.filePath = filePath;
         this.absolutePath = this.getAbsolutePath(this.filePath);
         this.wikiId = wikiId;
@@ -45,6 +45,7 @@ class WikiUploadFileService {
     }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.setWikiMasterId();
             if (fs_1.default.lstatSync(this.filePath).isDirectory()) {
                 this.uploadFolder(this.filePath);
             }
@@ -184,10 +185,18 @@ class WikiUploadFileService {
         });
     }
     listWikis() {
-        this.client
-            .get("/wiki/wikis")
-            .then(r => console.log(r.data))
-            .catch(r => console.log(r, r.data));
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.client.get("/wiki/wikis");
+        });
+    }
+    setWikiMasterId() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.wikiId)
+                return this.wikiId;
+            const response = yield this.listWikis();
+            const masterWiki = response.data.value.find(it => it.type == "projectWiki");
+            this.wikiId = masterWiki.id;
+        });
     }
     // private
     getwikiPath(filePath) {
