@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-const { WikiUploadFileService } = require("./dist/index");
+const { WikiUploadFileService } = require("../dist/index");
 const argv = require("minimist")(process.argv.slice(2));
 const inputs = {
   organizationName: argv.organization,
@@ -10,4 +10,4 @@ const inputs = {
   filePath: argv._[argv._.length - 1]
 };
 
-new WikiUploadFileService(inputs).run();
+new WikiUploadFileService(inputs).listWikis().then(console.log);
