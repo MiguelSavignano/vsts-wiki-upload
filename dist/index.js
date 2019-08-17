@@ -22,6 +22,32 @@ const fs_1 = __importDefault(require("fs"));
 const walk = __importStar(require("fs-walk"));
 const _ = __importStar(require("lodash"));
 const createClient_1 = require("./createClient");
+class WikiApiService {
+    constructor(client) {
+        this.client = client;
+    }
+    create(wikiId, data, params) {
+        return this.client.put(`/wiki/wikis/${wikiId}/pages`, data, {
+            params
+        });
+    }
+    update(wikiId, versionEtag, data, params) {
+        return this.client.put(`/wiki/wikis/${wikiId}/pages`, data, {
+            params,
+            headers: {
+                "If-Match": versionEtag
+            }
+        });
+    }
+    list() {
+        return this.client.get("/wiki/wikis");
+    }
+    get(wikiId, params = {}) {
+        return this.client.get(`/wiki/wikis/${wikiId}/pages`, {
+            params
+        });
+    }
+}
 class WikiUploadFileService {
     constructor({ organizationName, projectName, apiToken, filePath, wikiId = null }) {
         this.filePath = filePath;
@@ -32,6 +58,7 @@ class WikiUploadFileService {
             projectName,
             apiToken
         });
+        this.wikiService = new WikiApiService(this.client);
     }
     getAbsolutePath(filePath) {
         if (filePath[0] == "/") {
@@ -154,14 +181,7 @@ class WikiUploadFileService {
     updateFile({ filePath, wikiPath, versionEtag }) {
         return __awaiter(this, void 0, void 0, function* () {
             const content = fs_1.default.readFileSync(filePath, "utf8");
-            yield this.client.put(`/wiki/wikis/${this.wikiId}/pages`, { content }, {
-                params: {
-                    path: wikiPath
-                },
-                headers: {
-                    "If-Match": versionEtag
-                }
-            });
+            yield this.wikiService.update(this.wikiId, versionEtag, { content }, { path: wikiPath });
         });
     }
     createFile({ filePath, wikiPath }) {
@@ -176,17 +196,15 @@ class WikiUploadFileService {
     }
     getPageVersion(wikiPath) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.client.get(`/wiki/wikis/${this.wikiId}/pages`, {
-                params: {
-                    path: wikiPath
-                }
+            const response = yield this.wikiService.get(this.wikiId, {
+                path: wikiPath
             });
             return response.headers.etag;
         });
     }
     listWikis() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.client.get("/wiki/wikis");
+            return this.wikiService.list();
         });
     }
     setWikiMasterId() {
