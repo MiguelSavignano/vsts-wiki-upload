@@ -13,8 +13,7 @@ const wikiUploadFileServiceFactory = (values = {}) => {
 
 describe('WikiUploadFileService', () => {
   let subject;
-  const absolutePath =
-    '/home/miguelsavignano/developer/javascript/npm/vsts-wiki-upload/';
+  const absolutePath = `${process.cwd()}/`;
 
   beforeEach(() => {
     subject = wikiUploadFileServiceFactory();
