@@ -22,32 +22,7 @@ const fs_1 = __importDefault(require("fs"));
 const walk = __importStar(require("fs-walk"));
 const _ = __importStar(require("lodash"));
 const createClient_1 = require("./createClient");
-class WikiApiService {
-    constructor(client) {
-        this.client = client;
-    }
-    create(wikiId, data, params) {
-        return this.client.put(`/wiki/wikis/${wikiId}/pages`, data, {
-            params
-        });
-    }
-    update(wikiId, versionEtag, data, params) {
-        return this.client.put(`/wiki/wikis/${wikiId}/pages`, data, {
-            params,
-            headers: {
-                "If-Match": versionEtag
-            }
-        });
-    }
-    list() {
-        return this.client.get("/wiki/wikis");
-    }
-    get(wikiId, params = {}) {
-        return this.client.get(`/wiki/wikis/${wikiId}/pages`, {
-            params
-        });
-    }
-}
+const WikiApiService_1 = require("./WikiApiService");
 class WikiUploadFileService {
     constructor({ organizationName, projectName, apiToken, filePath, wikiId = null }) {
         this.filePath = filePath;
@@ -58,17 +33,7 @@ class WikiUploadFileService {
             projectName,
             apiToken
         });
-        this.wikiService = new WikiApiService(this.client);
-    }
-    getAbsolutePath(filePath) {
-        if (filePath[0] == "/") {
-            const pathParts = filePath.split("/");
-            pathParts.pop();
-            return `${pathParts.join("/")}/`;
-        }
-        else {
-            return "./";
-        }
+        this.wikiService = new WikiApiService_1.WikiApiService(this.client);
     }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -86,12 +51,13 @@ class WikiUploadFileService {
             const subFolders = this.getSubfoldersForFolder(folderPath);
             yield this.createSubfolders(subFolders);
             const filesPath = this.listFolderItems(folderPath);
+            // tslint:disable-next-line: prefer-for-of
             for (let i = 0; i < filesPath.length; i++) {
                 try {
                     yield this.uploadSingleFile(filesPath[i]);
                 }
                 catch (err) {
-                    console.error("ERROR [uploadSingleFile]", err);
+                    console.error('ERROR [uploadSingleFile]', err);
                 }
             }
         });
@@ -109,9 +75,9 @@ class WikiUploadFileService {
                         .then(resolve)
                         .catch(error => {
                         const response = error.response;
-                        if (response.data.typeKey === "WikiAncestorPageNotFoundException") {
+                        if (response.data.typeKey === 'WikiAncestorPageNotFoundException') {
                             const subFolders = this.getSubfoldersForFile(filePath);
-                            this.createSubfolders(subFolders).then(response => {
+                            this.createSubfolders(subFolders).then(_response => {
                                 this.createFile({ filePath, wikiPath });
                             });
                         }
@@ -123,9 +89,10 @@ class WikiUploadFileService {
     createSubfolders(subfolders) {
         return __awaiter(this, void 0, void 0, function* () {
             // promiseSeries
+            // tslint:disable-next-line: prefer-for-of
             for (let i = 0; i < subfolders.length; i++) {
                 try {
-                    let r = yield this.createFolder(subfolders[i]);
+                    yield this.createFolder(subfolders[i]);
                 }
                 catch (_a) { }
             }
@@ -136,7 +103,7 @@ class WikiUploadFileService {
         walk.walkSync(folderPath, (basedir, filename, stat, next) => {
             if (stat.isDirectory())
                 return false;
-            if (this.absolutePath == "./") {
+            if (this.absolutePath == './') {
                 items.push(`${this.absolutePath}${basedir}/${filename}`);
             }
             else {
@@ -145,8 +112,8 @@ class WikiUploadFileService {
         });
         return items;
     }
-    getSubfoldersForFile(filePath = "") {
-        const folders = filePath.split("/").filter((it, index, array) => {
+    getSubfoldersForFile(filePath = '') {
+        const folders = filePath.split('/').filter((it, index, array) => {
             if (index == 0 || index == array.length - 1)
                 return false;
             return true;
@@ -162,31 +129,27 @@ class WikiUploadFileService {
             return memo;
         }, []);
     }
-    getSubfoldersForFolder(filePath = "") {
+    getSubfoldersForFolder(filePath = '') {
         const subFoldersPath = [];
         walk.walkSync(filePath, (basedir, filename, stat, next) => {
-            subFoldersPath.push(basedir.replace(this.absolutePath, ""));
+            subFoldersPath.push(basedir.replace(this.absolutePath, ''));
         });
         return _.uniq(subFoldersPath);
     }
     createFolder(wikiPath) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.client.put(`/wiki/wikis/${this.wikiId}/pages`, { content: "" }, {
-                params: {
-                    path: wikiPath
-                }
-            });
+            return this.wikiService.create(this.wikiId, { content: '' }, { path: wikiPath });
         });
     }
     updateFile({ filePath, wikiPath, versionEtag }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const content = fs_1.default.readFileSync(filePath, "utf8");
+            const content = fs_1.default.readFileSync(filePath, 'utf8');
             yield this.wikiService.update(this.wikiId, versionEtag, { content }, { path: wikiPath });
         });
     }
     createFile({ filePath, wikiPath }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const content = fs_1.default.readFileSync(filePath, "utf8");
+            const content = fs_1.default.readFileSync(filePath, 'utf8');
             yield this.client.put(`/wiki/wikis/${this.wikiId}/pages`, { content }, {
                 params: {
                     path: wikiPath
@@ -202,23 +165,28 @@ class WikiUploadFileService {
             return response.headers.etag;
         });
     }
-    listWikis() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.wikiService.list();
-        });
-    }
     setWikiMasterId() {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.wikiId)
                 return this.wikiId;
-            const response = yield this.listWikis();
-            const masterWiki = response.data.value.find(it => it.type == "projectWiki");
+            const response = yield this.wikiService.list();
+            const masterWiki = response.data.value.find(it => it.type == 'projectWiki');
             this.wikiId = masterWiki.id;
         });
     }
     // private
     getwikiPath(filePath) {
-        return filePath.replace(this.absolutePath, "");
+        return filePath.replace(this.absolutePath, '');
+    }
+    getAbsolutePath(filePath) {
+        if (filePath[0] == '/') {
+            const pathParts = filePath.split('/');
+            pathParts.pop();
+            return `${pathParts.join('/')}/`;
+        }
+        else {
+            return './';
+        }
     }
 }
 exports.WikiUploadFileService = WikiUploadFileService;

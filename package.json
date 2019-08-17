@@ -5,6 +5,7 @@
   "bin": "bin/vsts-wiki-upload.js",
   "main": "dist/index.js",
   "scripts": {
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "build": "rm -fr dist && tsc",
     "test": "jest"
   },
@@ -30,6 +31,8 @@
     "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typedoc": "^0.15.0",
     "typescript": "^3.5.3"
   }
 }

@@ -9,17 +9,17 @@ exports.createClient = ({ organizationName, projectName, apiToken }) => {
         baseURL: `https://dev.azure.com/${organizationName}/${projectName}/_apis/`,
         auth: { username: organizationName, password: apiToken },
         headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
         }
     });
-    client.interceptors.response.use(function (response) {
+    client.interceptors.response.use(response => {
         console.log(response.status);
         return response;
-    }, function (error) {
+    }, error => {
         const response = error.response;
         console.error(`[${response.status}][${response.data.typeKey}] ${response.data.message}`);
         return Promise.reject(error);
     });
-    client.defaults.params = { "api-version": "5.0" };
+    client.defaults.params = { 'api-version': '5.0' };
     return client;
 };

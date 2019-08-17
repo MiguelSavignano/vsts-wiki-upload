@@ -1,6 +1,9 @@
-import { AxiosInstance } from "axios";
+import { AxiosInstance } from 'axios';
+
+// https://docs.microsoft.com/en-us/rest/api/azure/devops/wiki/wikis?view=azure-devops-rest-5.0
 export class WikiApiService {
   constructor(readonly client: AxiosInstance) {}
+
   create(
     wikiId: string,
     data: {
@@ -14,6 +17,7 @@ export class WikiApiService {
       params
     });
   }
+
   update(
     wikiId: string,
     versionEtag: string,
@@ -27,13 +31,15 @@ export class WikiApiService {
     return this.client.put(`/wiki/wikis/${wikiId}/pages`, data, {
       params,
       headers: {
-        "If-Match": versionEtag
+        'If-Match': versionEtag
       }
     });
   }
+
   list() {
-    return this.client.get("/wiki/wikis");
+    return this.client.get('/wiki/wikis');
   }
+
   get(
     wikiId: string,
     params: {
