@@ -1,0 +1,43 @@
+pool:
+  name: Azure Pipelines
+  demands: npm
+
+steps:
+  - task: Npm@1
+    displayName: 'npm ci'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: ci
+
+  - task: Npm@1
+    displayName: 'npm run build'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: 'run build'
+
+  - task: Npm@1
+    displayName: 'npm run lint'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: 'run lint'
+
+  - task: Npm@1
+    displayName: 'npm run test'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: 'run test:cov'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results'
+    inputs:
+      testResultsFiles: 'junit.xml'
+
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage from coverage/cobertura-coverage.xml'
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: 'coverage/cobertura-coverage.xml'
