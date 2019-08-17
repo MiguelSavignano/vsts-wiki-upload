@@ -4,3 +4,5 @@ console.js
 console.ts
 console.sh
 docs
+coverage
+junit.xml
