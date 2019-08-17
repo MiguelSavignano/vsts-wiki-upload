@@ -3,40 +3,8 @@ import * as walk from "fs-walk";
 import * as _ from "lodash";
 import { AxiosInstance } from "axios";
 import { createClient } from "./createClient";
+import { WikiApiService } from "./WikiApiService";
 
-class WikiApiService {
-  constructor(readonly client: AxiosInstance) {}
-
-  create(wikiId: string, data: { content: string }, params: { path: string }) {
-    return this.client.put(`/wiki/wikis/${wikiId}/pages`, data, {
-      params
-    });
-  }
-
-  update(
-    wikiId: string,
-    versionEtag: string,
-    data: { content: string },
-    params: { path: string }
-  ) {
-    return this.client.put(`/wiki/wikis/${wikiId}/pages`, data, {
-      params,
-      headers: {
-        "If-Match": versionEtag
-      }
-    });
-  }
-
-  list() {
-    return this.client.get("/wiki/wikis");
-  }
-
-  get(wikiId: string, params: { path?: string } = {}) {
-    return this.client.get(`/wiki/wikis/${wikiId}/pages`, {
-      params
-    });
-  }
-}
 export class WikiUploadFileService {
   filePath: string;
   absolutePath: string;
@@ -60,16 +28,6 @@ export class WikiUploadFileService {
       apiToken
     });
     this.wikiService = new WikiApiService(this.client);
-  }
-
-  getAbsolutePath(filePath) {
-    if (filePath[0] == "/") {
-      const pathParts = filePath.split("/");
-      pathParts.pop();
-      return `${pathParts.join("/")}/`;
-    } else {
-      return "./";
-    }
   }
 
   async run() {
@@ -168,14 +126,10 @@ export class WikiUploadFileService {
   }
 
   async createFolder(wikiPath) {
-    return this.client.put(
-      `/wiki/wikis/${this.wikiId}/pages`,
+    return this.wikiService.create(
+      this.wikiId,
       { content: "" },
-      {
-        params: {
-          path: wikiPath
-        }
-      }
+      { path: wikiPath }
     );
   }
 
@@ -202,20 +156,16 @@ export class WikiUploadFileService {
     );
   }
 
-  async getPageVersion(wikiPath) {
+  async getPageVersion(wikiPath: string) {
     const response = await this.wikiService.get(this.wikiId, {
       path: wikiPath
     });
     return response.headers.etag;
   }
 
-  async listWikis() {
-    return this.wikiService.list();
-  }
-
   async setWikiMasterId() {
     if (this.wikiId) return this.wikiId;
-    const response = await this.listWikis();
+    const response = await this.wikiService.list();
     const masterWiki = response.data.value.find(it => it.type == "projectWiki");
     this.wikiId = masterWiki.id;
   }
@@ -223,5 +173,15 @@ export class WikiUploadFileService {
   // private
   getwikiPath(filePath) {
     return filePath.replace(this.absolutePath, "");
+  }
+
+  getAbsolutePath(filePath) {
+    if (filePath[0] == "/") {
+      const pathParts = filePath.split("/");
+      pathParts.pop();
+      return `${pathParts.join("/")}/`;
+    } else {
+      return "./";
+    }
   }
 }
