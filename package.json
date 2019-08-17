@@ -5,6 +5,7 @@
   "bin": "bin/vsts-wiki-upload.js",
   "main": "dist/index.js",
   "scripts": {
+    "docs": "typedoc --out docs/typescript src/ --theme markdown --mode file",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "build": "rm -fr dist && tsc",
     "test": "jest"
@@ -33,6 +34,7 @@
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
     "typedoc": "^0.15.0",
+    "typedoc-plugin-markdown": "^2.1.1",
     "typescript": "^3.5.3"
   }
 }
