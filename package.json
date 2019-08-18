@@ -4,6 +4,9 @@
   "description": "Upload files to VSTS wiki",
   "bin": "bin/vsts-wiki-upload.js",
   "main": "dist/index.js",
+  "files": [
+    "/dist"
+  ],
   "scripts": {
     "docs": "typedoc --out docs/typescript src/ --theme markdown --mode file",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
@@ -26,6 +29,7 @@
     "minimist": "^1.2.0"
   },
   "devDependencies": {
+    "@types/dotenv": "^6.1.1",
     "@types/jest": "^24.0.17",
     "@types/node": "^12.6.9",
     "dotenv": "^8.0.0",

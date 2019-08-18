@@ -1,6 +1,5 @@
 .env
-console.ts
+src
 console.sh
 .vscode
 examples
-index.spec.ts
