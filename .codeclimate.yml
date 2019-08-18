@@ -1,0 +1,5 @@
+exclude_patterns:
+  - 'examples/*'
+  - '**/*.js'
+  - '**/*.spec.js'
+  - '**/*.spec.ts'
