@@ -20,7 +20,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const walk = __importStar(require("fs-walk"));
-const _ = __importStar(require("lodash"));
 const createClient_1 = require("./createClient");
 const WikiApiService_1 = require("./WikiApiService");
 class WikiUploadFileService {
@@ -190,3 +189,8 @@ class WikiUploadFileService {
     }
 }
 exports.WikiUploadFileService = WikiUploadFileService;
+const _ = {
+    uniq(array) {
+        return [...new Set(array)];
+    }
+};
