@@ -1,6 +1,6 @@
 {
   "name": "vsts-wiki-upload",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Upload files to VSTS wiki",
   "bin": "bin/vsts-wiki-upload.js",
   "main": "dist/index.js",
