@@ -2,6 +2,8 @@
 
 Upload files to VSTS wiki using the oficial [API](https://docs.microsoft.com/en-us/rest/api/azure/devops/wiki/pages?view=azure-devops-rest-5.0)
 
+[![Build status](https://dev.azure.com/miguel-savignano/npm-vsts-wiki-upload/_apis/build/status/Build-Lint-Test)](https://dev.azure.com/miguel-savignano/npm-vsts-wiki-upload/_build/latest?definitionId=3)
+
 ## Install
 
 ```
