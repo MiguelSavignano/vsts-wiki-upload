@@ -1,6 +1,5 @@
 import fs from 'fs';
 import * as walk from 'fs-walk';
-import * as _ from 'lodash';
 import { AxiosInstance } from 'axios';
 import { createClient } from './createClient';
 import { WikiApiService } from './WikiApiService';
@@ -187,3 +186,9 @@ export class WikiUploadFileService {
     }
   }
 }
+
+const _ = {
+  uniq(array: any[]) {
+    return [...new Set(array)];
+  }
+};

@@ -26,7 +26,6 @@
   "dependencies": {
     "axios": "^0.18.1",
     "fs-walk": "0.0.2",
-    "lodash": "^4.17.15",
     "minimist": "^1.2.0"
   },
   "devDependencies": {
